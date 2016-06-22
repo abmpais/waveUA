@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html ng-app="waveUA">
+<head>
+    <!--
+        Customize this policy to fit your own app's needs. For more guidance, see:
+            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+        -->
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <title>WaveUA</title>
+    <script type="text/javascript" src="js/jquery-1.12.3.min.js"></script>
+
+    <link rel="stylesheet" href="lib/framework7/css/framework7.ios.min.css">
+    <link rel="stylesheet" href="lib/framework7/css/framework7.ios.colors.min.css">
+    <!-- Font-awesome icon library -->
+    <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+
+
+</head>
+<body class="layout-white" ng-controller="MainController">
+<!-- Status bar overlay for iOS7 issue - see my-app.css for background color setting and config.xml -->
+<div class="statusbar-overlay"></div>
+
+<!-- Panels overlay - used for side menu and any other panels to slide out from either side-->
+<div class="panel-overlay"></div>
+
+<!-- Left panel menu with reveal effect (could also use a panel-cover effect)-->
+<div class="panel panel-left panel-reveal" style ="overflow: hidden">
+        <img src="img/sideMenu.png">
+        <img id="profileSide" style ="position: relative;
+             left: 30%;
+             top: -120px;
+             width: 120px;
+             height: 120px;
+             border-radius: 100px;
+             " class="lazy" data-src=""/>
+    <h2 id="profileName" style="position: relative; top:-100px; left: 20%"></h2>
+    <div class="list-block" style="position:relative; top:-50px">
+        <ul>
+            <li id="feed">
+                <div class="item-content">
+                    <div class="item-media"><i class="fa fa-newspaper-o"></i></div>
+                    <div class="item-inner">
+                        <div class="item-title label"><a id="feedMenu" href="#">Feed</a></div>
+                    </div>
+                </div>
+            </li>
+            <li id="search">
+                <div class="item-content">
+                    <div class="item-media"><i class="fa fa-search"></i></div>
+                    <div class="item-inner">
+                        <div class="item-title label"><a id="indexMenu" href="#">Search</a></div>
+                    </div>
+                </div>
+            </li>
+            <li id="profile">
+                <div class="item-content">
+                    <div class="item-media"><i class="fa fa-user"></i></div>
+                    <div class="item-inner">
+                        <div class="item-title label"><a href="#" id="profileMenu" ng-click="showProfile()">Profile</a></div>
+                    </div>
+                </div>
+            </li>
+            <li id="map">
+                <div class="item-content">
+                    <div class="item-media"><i class="fa fa-map"></i></div>
+                    <div class="item-inner">
+                        <div class="item-title label"><a id="mapMenu" href="#">Map</a></div>
+                    </div>
+                </div>
+            </li>
+            <li id="settings">
+                <div class="item-content">
+                    <div class="item-media"> <i class="icon fa fa-cog"></i></div>
+                    <div class="item-inner">
+                        <div class="item-title label"><a id="settingsMenu" href="#">Settings</a></div>
+                    </div>
+                </div>
+            </li>
+            <li id="about">
+                <div class="item-content">
+                    <div class="item-media"><i class="icon fa fa-info-circle"></i></div>
+                    <div class="item-inner">
+                        <div class="item-title label">About</div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Views-->
+<div class="views">
+    <!-- Main view-->
+    <div class="view view-main">
+        <!-- Top Navigation Bar-->
+        <div class="navbar navbar-hidden" >
+            <div class="navbar-inner">
+                <!-- Home navbar -->
+                <div class="left ">
+                    <!-- Left side navbar contains only icon -->
+                    <a href="#" class="link icon-only open-panel">
+                        <i class="fa fa-bars" ></i>
+                    </a>
+                </div>
+                <div class="center sliding">
+                    <img style="width:90%" src="img/icon.png">
+                </div>
+                <div class="right">
+                    <a id="searchIcon" href="#" class="link icon-only">
+                        <i class="fa fa-search"     style="font-size:40px;" ></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pages -->
+
+        <!-- Bottom Toolbar on every view unless no-toolbar class specified (see item template)-->
+        <div class="toolbar toolbar-hidden">
+            <div class="toolbar-inner" style="height: 50px; background-image: url('img/player_back.png')";>
+                <div id="previewAudio" class="content-block">
+                    <img id="imgPreview" src="" style="width: 10%">
+                    <audio id="player" controls preload="" src=""></audio>
+                    <a href="#" class="ac-1"><i class="fa fa-sort-up"></i></a>
+
+                        <i id="expandPlayer" class="fa fa-arrows-alt"></i>
+                </div>
+                <div id="spotifyExternal">
+                    <a href="" id="spotifyLink" class="link external">
+                        <i class="icon icon-spotify"></i>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="pages navbar-through toolbar-through">
+
+            <!-- Page, data-page contains page name-->
+            <!--INDEX PAGE-->
+            <div data-page="index" class="page">
+                <!-- Scrollable page content-->
+                <div class="page-content" style="background-color: white">
+                    <div class="content-block-title">Criteria</div>
+                    <!--<div id="listview" class="link"></div>-->
+
+                    <div class="list-block">
+                        <ul>
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-media"><i class="icon fa fa-music" style="font-size: 20px"></i></div>
+                                    <div class="item-inner">
+                                        <div class="item-title label">
+
+                                                    <select name="searchTerms" id="searchTerms" >
+                                                        <option value="track" selected>Songs</option>
+                                                        <option value="artist">Artist</option>
+                                                        <option value="album">Album</option>
+                                                    </select>
+
+                                        </div>
+                                        <div class="item-input">
+                                            <input id="term" type="text" placeholder="Search for..." value=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-media"><i class="icon fa fa-list-ul" style="font-size: 20px"></i></div>
+                                    <div class="item-inner">
+                                        <div class="item-title label" style="color:#777">Max Results</div>
+                                        <div class="item-input">
+                                            <div class="range-slider">
+                                                <input id="numResults" type="range" min="0" max="50" value="20" step="1"/>
+                                            </div>
+                                        </div>
+                                        <div class="item-input rangeVal">
+                                            <input id="sliderVal" type="text" disabled value="20">
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="content-block">
+                        <div class="row">
+                            <div class="col-100">
+                                <input id="btnSearch" type="button" value="Submit" style="border-radius: 0%;
+                                font-weight: 100; color:white;
+    font-size:20px;" class="button button-big button-fill color-green"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--MAP PAGE-->
+            <div data-page="map" class="page">
+                <!-- Scrollable page content-->
+                <div class="page-content">
+                    <div id="map-canvas" style="width: 100%; height: 100%;"></div>
+                </div>
+            </div>
+            <!--SETTINGS PAGE-->
+            <div data-page="settings" class="page">
+                <!-- Scrollable page content-->
+                <div class="page-content">
+                    <div id="dbDisplay" class="content-block-title">
+                    </div>
+                </div>
+            </div>
+            <!--PROFILE PAGE-->
+            <div data-page="profile" class="page">
+                <!-- Scrollable page content-->
+                <div class="page-content">
+                    <div class="content-block-title">Profile</div>
+                    <div class="list-block">
+                        <ul>
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-media"><img id="profile_image" data-src="" class="lazy"/></div>
+                                    <div class="item-inner">
+                                        <div id="profile_country" class="item-title">Country: </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div id="profile_name" class="item-title label"></div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+
+
+                </div>
+            </div>
+            <!--EXPAND PLAYER PAGE-->
+            <div data-page="expandPlayer" class="page">
+                <!-- Scrollable page content-->
+                <div class="page-content">
+                    <a href="" class="back"><i class="fa fa-arrow-left"></i></a>
+                    <div class="content-block-title">Playing now</div>
+                    <div class="list-block">
+                        <ul>
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-media"><img id="trackImage" src="" class="lazy"/></div>
+                                    <div class="item-inner">
+                                        <div class="item-title">Country: </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title label"></div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+
+
+                </div>
+            </div>
+
+            <!--FEED PAGE-->
+                <div data-page="feed" class="page">
+                    <!-- Scrollable page content-->
+                    <div class="page-content">
+                        <div class="content-block-title">Feed</div>
+                        <div id="feedContent" class="list-block">
+                            <ul id="feedLi">
+
+                            </ul>
+                        </div>
+
+
+
+                    </div>
+                </div>
+            <!--SPLASHSCREEN PAGE-->
+            <div id="splashscreen" class="page no-navbar no-toolbar" data-page="splashscreen">
+                <!-- page-content has additional login-screen content -->
+                <div class="page-content" style="background-color:#491549;
+    background-image:-webkit-linear-gradient(left, #C44A4B 0%, #491549 100%);
+    background-image:-ms-linear-gradient(left, #C44A4B 0%, #491549 100%);">
+                    <div class="content-block" style="margin-top:45%">
+                            <div class=""><img style="display: block; margin: 0 auto" src="img/logo_white-01.png"/></div>
+                        <p><input type="button" class="button button-big button-fill color-white" style="text-transform: uppercase;
+    font-weight: 600;
+    color: #C44A4B;
+    font-size:300%;
+    border-radius: 0%;
+    padding: 5px; margin-top:10%" href="#" ng-click="login()" value="Login"/></p>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!--  TEMPLATES  --->
+
+<!-- Media List Template  -->
+<script id="listTemplate" type="text/template7">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>Back</span></a></div>
+            <div class="center sliding">Results</div>
+            <div class="right">
+                <a href="#" class="link icon-only open-panel"> <i class="fa fa-bars"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search bar -->
+    <div class="page" data-page="list">
+        <form class="searchbar searchbar-init" data-search-list=".list-block-search" data-search-in=".item-title"
+              data-searchbar-found=".searchbar-found" data-searchbar-not-found=".searchbar-not-found">
+            <div class="searchbar-input">
+                <input type="search" placeholder="Search">
+                <a href="#" class="searchbar-clear"></a>
+            </div>
+            <a href="#" class="searchbar-cancel">Cancel</a>
+        </form>
+        <div class="searchbar-overlay"></div>
+        <div class="page-content">
+            <!-- no result -->
+            <div class="content-block searchbar-not-found">
+                Nothing found
+            </div>
+
+            <div id="mediaList" class="list-block media-list list-block-search searchbar-found">
+                <ul>
+                    {{#each this}}
+                    <li class="swipeout">
+                        <div class="swipeout-content">
+                            <a href='#' data-template='itemTemplate' data-context='{{stringify this}}'
+                               class="item-content item-link">
+                                <div class="item-media">
+                                    <img data-src="{{album.images[2].url}}" class="lazy">
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title-row">
+                                        <div class="item-title">{{name}}</div>
+                                    </div>
+                                    <div class="item-subtitle">{{artists[0].name}}</div>
+                                    <div class="item-text">{{album.name}}</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="swipeout-actions-right">
+                            <a href="#" class="bg-orange favorite" data-item="{{@index}}"><i class="icon fa fa-star fa-2x"></i></a>
+                            <a href="#" class="bg-blue share" data-item="{{@index}}"><i class="icon fa fa-share fa-2x"></i></a>
+                        </div>
+                        <div class="swipeout-actions-left">
+                            <a href="#" class="bg-green preview" data-item="{{@index}}"><i class="icon fa fa-play fa-2x"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+    </div>
+</script>
+<!-- Artist Item Template -->
+<script id="artistTemplate" type="text/template7">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>Back</span></a></div>
+            <div class="center sliding">Results</div>
+            <div class="right">
+                <a href="#" class="link icon-only open-panel"> <i class="fa fa-bars"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search bar -->
+    <div class="page" data-page="artist">
+        <form class="searchbar searchbar-init" data-search-list=".list-block-search" data-search-in=".item-title"
+              data-searchbar-found=".searchbar-found" data-searchbar-not-found=".searchbar-not-found">
+            <div class="searchbar-input">
+                <input type="search" placeholder="Search">
+                <a href="#" class="searchbar-clear"></a>
+            </div>
+            <a href="#" class="searchbar-cancel">Cancel</a>
+        </form>
+        <div class="searchbar-overlay"></div>
+        <div class="page-content">
+            <!-- no result -->
+            <div class="content-block searchbar-not-found">
+                Nothing found
+            </div>
+
+            <div id="artistList" class="list-block media-list list-block-search searchbar-found">
+                <ul>
+                    {{#each this}}
+                    <li class="swipeout">
+                        <div class="swipeout-content">
+                            <a href='#' onclick='
+                                $$.ajax({
+     dataType: "json",
+                                url:"https://api.spotify.com/v1/artists/{{id}}/albums",
+                                success: function (resp) {
+                                mainView.router.load({
+                                template: Template7.templates.artistAlbumTemplate,
+                                context: resp.items
+                                });
+                                },
+                                error: function (xhr) {
+                                console.log("Error on ajax call " + xhr);
+                                }
+                                });'
+                               class="item-content item-link">
+                                <div class="item-media">
+                                    <img data-src="{{images.url}}" class="lazy">
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title-row">
+                                        <div class="item-title">{{name}}</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+    </div>
+</script>
+<!--ARTIST ALBUM TEMPLATE-->
+<script id="artistAlbumTemplate" type="text/template7">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>Back</span></a></div>
+            <div class="center sliding">Results</div>
+            <div class="right">
+                <a href="#" class="link icon-only open-panel"> <i class="fa fa-bars"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search bar -->
+    <div class="page" data-page="artistAlbum">
+        <form class="searchbar searchbar-init" data-search-list=".list-block-search" data-search-in=".item-title"
+              data-searchbar-found=".searchbar-found" data-searchbar-not-found=".searchbar-not-found">
+            <div class="searchbar-input" ngController="spotifyCtrl as spotify">
+                <input type="search" placeholder="Search">
+                <a href="#" class="searchbar-clear"></a>
+            </div>
+            <a href="#" class="searchbar-cancel">Cancel</a>
+        </form>
+        <div class="searchbar-overlay"></div>
+        <div class="page-content">
+            <!-- no result -->
+            <div class="content-block searchbar-not-found">
+                Nothing found
+            </div>
+
+            <div id="artistAlbumList" class="list-block media-list list-block-search searchbar-found">
+                <ul>
+                    {{#each this}}
+                    <li class="swipeout">
+                        <div class="swipeout-content">
+                            <a href='#' onclick='
+                                $$.ajax({
+     dataType: "json",
+                                url:"https://api.spotify.com/v1/albums/{{id}}/tracks",
+                                success: function (resp) {
+                                mainView.router.load({
+                                template: Template7.templates.albumSongsTemplate,
+                                context: resp.items
+                                });
+                                },
+                                error: function (xhr) {
+                                console.log("Error on ajax call " + xhr);
+                                }
+                                });'
+                               class="item-content item-link">
+                                <div class="item-media">
+                                    <img data-src="" class="lazy">
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title-row">
+                                        <div class="item-title">{{name}}</div>
+                                    </div>
+
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+    </div>
+</script>
+<!--ARTIST ALBUM TEMPLATE-->
+<script id="albumSongsTemplate" type="text/template7">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>Back</span></a></div>
+            <div class="center sliding">Results</div>
+            <div class="right">
+                <a href="#" class="link icon-only open-panel"> <i class="fa fa-bars"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search bar -->
+    <div class="page" data-page="artistAlbum">
+        <form class="searchbar searchbar-init" data-search-list=".list-block-search" data-search-in=".item-title"
+              data-searchbar-found=".searchbar-found" data-searchbar-not-found=".searchbar-not-found">
+            <div class="searchbar-input">
+                <input type="search" placeholder="Search">
+                <a href="#" class="searchbar-clear"></a>
+            </div>
+            <a href="#" class="searchbar-cancel">Cancel</a>
+        </form>
+        <div class="searchbar-overlay"></div>
+        <div class="page-content">
+            <!-- no result -->
+            <div class="content-block searchbar-not-found">
+                Nothing found
+            </div>
+
+            <div id="albumSongsList" class="list-block media-list list-block-search searchbar-found">
+                <ul>
+                    {{#each this}}
+                    <li class="swipeout">
+                        <div class="swipeout-content">
+                            <a href='#' onclick='
+                                $$.ajax({
+     dataType: "json",
+                                url:"https://api.spotify.com/v1/tracks/{{id}}",
+                                success: function (resp) {
+                                mainView.router.load({
+                                template: Template7.templates.itemTemplate,
+                                context: resp
+                                });
+                                },
+                                error: function (xhr) {
+                                console.log("Error on ajax call " + xhr);
+                                }
+                                });'
+
+                               class="item-content item-link">
+                                <div class="item-media">
+                                    <img data-src="" class="lazy">
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title-row">
+                                        <div class="item-title">{{name}}</div>
+                                    </div>
+
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+    </div>
+</script>
+
+<!-- Album Item Template -->
+<script id="albumTemplate" type="text/template7">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>Back</span></a></div>
+            <div class="center sliding">Results</div>
+            <div class="right">
+                <a href="#" class="link icon-only open-panel"> <i class="fa fa-bars"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search bar -->
+    <div class="page" data-page="album">
+        <form class="searchbar searchbar-init" data-search-list=".list-block-search" data-search-in=".item-title"
+              data-searchbar-found=".searchbar-found" data-searchbar-not-found=".searchbar-not-found">
+            <div class="searchbar-input">
+                <input type="search" placeholder="Search">
+                <a href="#" class="searchbar-clear"></a>
+            </div>
+            <a href="#" class="searchbar-cancel">Cancel</a>
+        </form>
+        <div class="searchbar-overlay"></div>
+        <div class="page-content">
+            <!-- no result -->
+            <div class="content-block searchbar-not-found">
+                Nothing found
+            </div>
+
+            <div id="albumList" class="list-block media-list list-block-search searchbar-found">
+                <ul>
+                    {{#each this}}
+                    <li class="swipeout">
+                        <div class="swipeout-content">
+                            <a href='#' onclick='
+                                 $$.ajax({
+     dataType: "json",
+                                url:"https://api.spotify.com/v1/albums/{{id}}/tracks",
+                                success: function (resp) {
+                                mainView.router.load({
+                                template: Template7.templates.albumSongsTemplate,
+                                context: resp.items
+                                });
+                                },
+                                error: function (xhr) {
+                                console.log("Error on ajax call " + xhr);
+                                }
+                                });'
+                               class="item-content item-link">
+                                <div class="item-media">
+                                    <img data-src="" class="lazy">
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title-row">
+                                        <div class="item-title">{{name}}</div>
+                                    </div>
+
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+    </div>
+</script>
+
+
+<!-- Media Item Template -->
+<script id="itemTemplate" type="text/template7">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>Back</span></a></div>
+            <div class="center sliding">Media Detail</div>
+            <div class="right">
+                <a href="#" class="link icon-only open-panel"> <i class="fa fa-bars"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div data-page="media" class="page">
+        <div class="page-content">
+            <div class="content-block-title">Track Info</div>
+            <div class="list-block">
+                <ul>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><img data-src="{{album.images[2].url}}" class="lazy"/></div>
+                            <div class="item-inner">
+                                <div class="item-title">{{name}}</div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">Artist</div>
+                                <div class="item-title label">{{artists[0].name}}</div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="content-block-title">Album Info</div>
+            <div class="list-block">
+                <ul>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">Album</div>
+                                <div class="item-title label">{{album.name}}</div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">Popularity Rank</div>
+                                <div class="item-input">
+                                    <div class="range-slider">
+                                        <input type="range" min="0" max="100" value="{{popularity}}" disabled/>
+                                    </div>
+                                </div>
+                                <div class="item-input rangeVal">
+                                    <input type="text" disabled value="{{popularity}}">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <a id="playerBtn" href="">
+                <i class="icon fa fa-play fa-2x"> </i>
+            </a>
+            <form name="musicAdd" onsubmit="popupform(this,'musicAdd')" action="db/insertPlaylist.php" method="post">
+                <input type="hidden" name="title" value="{{name}}">
+                <input type="hidden" name="artist" value="{{artists[0].name}}">
+                <input type="hidden" name="album" value="{{album.name}}">
+                PLAYLIST
+                <select id="playlist">
+                </select>
+                <input type="submit">
+            </form>
+
+
+
+        </div>
+    </div>
+</script>
+</div>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="lib/framework7/js/framework7.min.js"></script>
+<script src="js/angular.js"></script>
+<script src="js/angular-spotify.js"></script>
+<script src="js/spotifyAuth.js"></script>
+<script type="text/javascript" src="js/my-app.js"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjehzyieNw2LwnTBZLjjYVzPm-1iemx7c">
+</script>
+
+
+<!-- Weinre Debugging Support - uncomment and replace ip address with yours below to debug -->
+<!-- see this guide for instructions http://docs.phonegap.com/references/developer-app/debugging/ -->
+<!--<script src="http://172.20.10.8:8080/target/target-script-min.js#anonymous"></script>-->
+</body>
+
+</html>
