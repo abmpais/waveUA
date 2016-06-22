@@ -1,0 +1,138 @@
+/*
+   stausbar-overlay sets the background color for the overlay. Since we are using the dark theme and want light text on it, but black text
+   is the default, we'll have to add the cordova-plugin-statusbar. Once added it will use a default lightcontent setting
+   which will make the text white so you can see on dark backgrounds. It does this by automatically adding this pref to
+   the config.xml upon build for ios -> <preference name="StatusBarStyle" value="lightcontent"/>
+
+   https://github.com/apache/cordova-plugin-statusbar
+*/
+#splashscreen {
+    background-image:linear-gradient(top, #491549 0%, #C44A4B 51%);
+    background-image:-webkit-linear-gradient(top, #491549 0%, #C44A4B 51%);
+    background-image:-ms-linear-gradient(top, #491549 0%, #C44A4B 51%);
+    background-image:-webkit-gradient(
+            linear,
+            left top,
+            left bottom,
+            color-stop(0, #491549),
+            color-stop(0.51, #C44A4B)
+    );
+}
+.statusbar-overlay {
+    background: #000000;
+}
+i.icon.icon-spotify {
+    width: 29px;
+    height: 29px;
+    background-image: url("../img/spotify.png");
+    margin-right: 3px;
+}
+/* Item View bottom action buttons */
+.bottom {
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+}
+/* Add space before actual range val */
+.rangeVal {
+    padding-left: 5px;
+}
+.list-block {
+    margin: 10px 0 !important;
+}
+/* Format content headers */
+.content-block-title {
+    margin: 18px 10px 10px;
+}
+/* Format the long track titles */
+.list-block .item-title {
+    white-space: inherit;
+    position: relative;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+/* Formats the Popularity Rank title to display slider better */
+.list-block .item-title.label {
+    width: 50%;
+
+}
+
+#progress-bar {
+    width: 100%;
+    background-color: @color-tertiary;
+    height: 5px;
+    position: relative;
+    margin: 1em 0;
+
+}
+#progress {
+    background-color: @color-secondary;
+    height: 5px;
+    position: absolute;
+    left: 0;
+    transition: width 2.5s linear 0;
+}
+
+#profileSide{
+    position: relative;
+    left: 0%;
+    top: -120px;
+    width: 120px;
+    height: 120px;
+    border-radius: 100px;
+}
+#profileName {
+    position: relative;
+    top:-120px;
+    left: 0%;
+}
+.perfil{
+    color: white; position: relative;
+}
+#profile1 {
+    width: 100%; height:250px; background-image:url('../img/perfil.png');margin-top: 40px;
+}
+#profile2{
+    left: 70px; top: 40px;
+}
+#profile_image {
+    border-radius: 250px; position: relative; height: 120px; width: 120px;
+    margin-top: 10px;
+
+}
+
+#profileSide {
+    position: relative;
+    left: 0%;
+    top: -120px;
+    width: 120px;
+    height: 120px;
+    border-radius: 100px;
+}
+
+.follow {
+    color: white; position: relative; text-decoration: none; text-transform: uppercase; display: inline;
+    margin: 30px;    top: 25px;}
+.cenas{
+    display: inline;
+}
+#songtitle{
+    color:#C44A4B;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: medium;
+    text-align: left;
+    margin-left: 20px;
+
+
+}
+#searchTerms{
+    text-transform: uppercase;
+    color:#C44A4B;
+
+}
+
+#plbtn{
+
+}
